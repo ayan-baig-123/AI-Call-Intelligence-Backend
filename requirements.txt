@@ -155,7 +155,7 @@ orjson==3.11.9
 ormsgpack==1.12.2
 overrides==7.7.0
 packaging==26.1
-pandas
+pandas==2.2.3
 pandocfilters==1.5.1
 parso==0.8.6
 pillow==12.3.0
