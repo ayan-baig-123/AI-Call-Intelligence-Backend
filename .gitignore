@@ -1,0 +1,20 @@
+# Python  
+venv/  
+__pycache__/  
+*.pyc  
+.env  
+# Node  
+node_modules/  
+.next/  
+dist/  
+# Exported data  
+exported_transcripts/  
+reports/  
+# IDE  
+.idea/  
+*.log  
+*.sqlite3  
+*.db  
+.DS_Store  
+*.egg-info/  
+build/ 
