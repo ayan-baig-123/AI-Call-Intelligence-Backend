@@ -173,7 +173,6 @@ pure_eval==0.2.3
 pyarrow==24.0.0
 pyasn1==0.6.4
 pyasn1_modules==0.4.2
-PyAudio==0.2.14
 pycparser==3.0
 pydantic==2.13.4
 pydantic_core==2.46.4
