@@ -8,6 +8,7 @@ class CallRecord(Base):
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     audio_filename = Column(String, nullable=True)  # <-- Added missing column here
+    audio_url = Column(String, nullable=True)  # Public URL of audio in Supabase
     customer_name = Column(String, nullable=True, default="Unknown")
     agent_name = Column(String, nullable=True, default="Support AI")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
