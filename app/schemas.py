@@ -3,7 +3,7 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime
 
 class CallRecordBase(BaseModel):
-    file_name: Optional[str] = None
+    audio_filename: Optional[str] = None
     customer_name: Optional[str] = "Unknown"
     agent_name: Optional[str] = "Support AI"
     duration: Optional[str] = "02:45"
