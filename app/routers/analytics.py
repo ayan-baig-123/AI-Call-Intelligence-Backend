@@ -10,8 +10,12 @@ router = APIRouter(prefix="/api/analytics", tags=["Dashboard Metrics"])
 def get_analytics(db: Session = Depends(get_db)):
     total_calls = db.query(CallRecord).count()
     completed = db.query(CallRecord).filter(CallRecord.status == "COMPLETED").count()
-    resolved = db.query(CallRecord).filter(CallRecord.is_resolved == True).count()
-    follow_ups = db.query(CallRecord).filter(CallRecord.follow_up_required == True).count()
+    # NOTE: the model stores `resolved` as the string "YES"/"NO", not a
+    # boolean `is_resolved` column (which doesn't exist on CallRecord).
+    resolved = db.query(CallRecord).filter(CallRecord.resolved == "YES").count()
+    # NOTE: there is no `follow_up_required` column on CallRecord. Treating
+    # "not yet resolved" as the follow-up count until a real column exists.
+    follow_ups = db.query(CallRecord).filter(CallRecord.resolved == "NO").count()
 
     res_rate = round((resolved / total_calls * 100), 1) if total_calls > 0 else 0.0
 
