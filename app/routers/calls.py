@@ -11,6 +11,7 @@ from app.database import get_db, SessionLocal
 from app.models import CallRecord
 from app.schemas import CallRecordResponse
 from app.services.ai_engine import process_audio
+from app.services.storage import upload_to_supabase
 from app.services.exporter import generate_excel_report, generate_pdf_report
 
 router = APIRouter(prefix="/api/calls", tags=["Calls Processing"])
@@ -58,7 +59,7 @@ async def live_call_websocket(websocket: WebSocket):
     audio_chunks = []
     
     db = SessionLocal()
-    call_record = CallRecord(file_name="live_call_stream.webm", status="PROCESSING", issue_category="Live Call", customer_name="Live Caller", agent_name="Support AI")
+    call_record = CallRecord(audio_filename="live_call_stream.webm", status="PROCESSING", issue_category="Live Call", customer_name="Live Caller", agent_name="Support AI")
     db.add(call_record)
     db.commit()
     db.refresh(call_record)
@@ -94,15 +95,24 @@ async def upload_audio_call(
     file: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
+    # Save uploaded file locally (needed for AI processing)
     file_path = os.path.join(UPLOAD_DIR, file.filename)
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    call_record = CallRecord(file_name=file.filename, status="PROCESSING")
+    # Upload to Supabase Storage and get public URL
+    try:
+        public_url = upload_to_supabase(file)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Storage upload failed: {str(e)}")
+
+    # Create DB record with both filename and Supabase URL
+    call_record = CallRecord(audio_filename=file.filename, audio_url=public_url, status="PROCESSING")
     db.add(call_record)
     db.commit()
     db.refresh(call_record)
 
+    # Run background AI task using the local file path
     background_tasks.add_task(run_ai_task, call_record.id, file_path, SessionLocal)
 
     return call_record
