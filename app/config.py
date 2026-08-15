@@ -15,7 +15,7 @@ class Settings:
     # OLLAMA_HOST=https://ollama.com and use a ":cloud"-suffixed model name
     # in LLM_MODEL (e.g. "gpt-oss:20b-cloud").
     OLLAMA_API_KEY: str = os.getenv("OLLAMA_API_KEY", "")
-    LLM_MODEL: str = os.getenv("LLM_MODEL", "qwen2.5:7b")
+    LLM_MODEL: str = os.getenv("LLM_MODEL", "gpt-oss:20b-cloud")
     WHISPER_MODEL_SIZE: str = os.getenv("WHISPER_MODEL_SIZE", "base")
     # Language hint for Whisper. Empty string = auto-detect (recommended when
     # calls can be in ANY language - Urdu, Punjabi, Pashto, Arabic, English,
