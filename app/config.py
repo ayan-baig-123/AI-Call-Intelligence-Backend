@@ -8,6 +8,13 @@ class Settings:
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./sql_app.db")
     UPLOAD_DIR: str = os.getenv("UPLOAD_DIR", str(BASE_DIR / "uploaded_audio"))
     OLLAMA_HOST: str = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+    # If set, LLM calls authenticate to Ollama Cloud (https://ollama.com) using
+    # this key instead of connecting to a local/self-hosted Ollama at
+    # OLLAMA_HOST. Get a free key (no credit card) at
+    # https://ollama.com/settings/keys - when using it, also set
+    # OLLAMA_HOST=https://ollama.com and use a ":cloud"-suffixed model name
+    # in LLM_MODEL (e.g. "gpt-oss:20b-cloud").
+    OLLAMA_API_KEY: str = os.getenv("OLLAMA_API_KEY", "")
     LLM_MODEL: str = os.getenv("LLM_MODEL", "qwen2.5:7b")
     WHISPER_MODEL_SIZE: str = os.getenv("WHISPER_MODEL_SIZE", "base")
     # Language hint for Whisper. Empty string = auto-detect (recommended when
