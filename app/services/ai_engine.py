@@ -363,7 +363,7 @@ def generate_smart_fallback(transcript_lines: list, formatted_transcript: str) -
 class LocalAIPipeline:
     def __init__(self):
         self.stt_model = None
-        self.llm_model = getattr(settings, "LLM_MODEL", "qwen2.5:7b")
+        self.llm_model = getattr(settings, "LLM_MODEL", "gpt-oss:20b-cloud")
         self.diarization_pipeline = None
         
         self._init_stt_model()
