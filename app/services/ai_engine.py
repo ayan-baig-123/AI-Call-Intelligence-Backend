@@ -31,6 +31,29 @@ except Exception:
     ollama = None
     OLLAMA_AVAILABLE = False
 
+
+def get_ollama_client():
+    """
+    Builds the Ollama client used for every LLM call in this file.
+
+    - If OLLAMA_API_KEY is set (Ollama Cloud - https://ollama.com/settings/keys,
+      free tier, no credit card), requests go to OLLAMA_HOST (should be
+      https://ollama.com) with an Authorization: Bearer header, so this
+      server never depends on any locally-running Ollama process.
+    - If OLLAMA_API_KEY is empty, falls back to a plain connection to
+      OLLAMA_HOST (e.g. a local Ollama instance, or one tunneled via ngrok)
+      with no auth header - this is the original self-hosted setup.
+    """
+    if not OLLAMA_AVAILABLE:
+        raise RuntimeError("The 'ollama' package is not installed.")
+
+    host = getattr(settings, "OLLAMA_HOST", "http://localhost:11434")
+    api_key = getattr(settings, "OLLAMA_API_KEY", "")
+
+    if api_key:
+        return ollama.Client(host=host, headers={"Authorization": f"Bearer {api_key}"})
+    return ollama.Client(host=host)
+
 # Safe dynamic import for pyannote.audio
 try:
     _pyannote_mod = importlib.import_module("pyannote.audio")
@@ -438,7 +461,8 @@ class LocalAIPipeline:
 
         logger.info(f"Warming up Ollama model: {self.llm_model}...")
         try:
-            ollama.chat(
+            client = get_ollama_client()
+            client.chat(
                 model=self.llm_model,
                 messages=[{"role": "user", "content": "Ping"}],
                 options={"num_predict": 1}
@@ -650,7 +674,8 @@ class LocalAIPipeline:
         """
 
         try:
-            response = ollama.chat(
+            client = get_ollama_client()
+            response = client.chat(
                 model=self.llm_model,
                 format="json",
                 messages=[
@@ -827,7 +852,8 @@ class LocalAIPipeline:
                     "You MUST fully translate every such word/line into English in your output.\n\n"
                     + user_content
                 )
-            response = ollama.chat(
+            client = get_ollama_client()
+            response = client.chat(
                 model=self.llm_model,
                 format="json",  
                 messages=[
